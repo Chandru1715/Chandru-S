@@ -1,0 +1,56 @@
+#include <xc.h>
+
+#pragma config FOSC = INTRC_NOCLKOUT
+#pragma config WDTE = OFF
+#pragma config PWRTE = ON
+#pragma config MCLRE = ON
+#pragma config CP = OFF
+#pragma config CPD = OFF
+#pragma config BOREN = OFF
+#pragma config IESO = ON
+#pragma config FCMEN = ON
+#pragma config LVP = OFF
+#pragma config BOR4V = BOR40V
+#pragma config WRT = OFF
+
+void delay(unsigned long int a)
+{
+    while(a--);
+}
+
+void transmit(char data)
+{
+    TXREG = data;
+
+    while(TXIF == 0);
+
+    TXIF = 0;
+
+    delay(1000);
+}
+
+void main(void)
+{
+    PORTA = 0x00;
+    PORTC = 0x00;
+
+    TRISA = 0x00;
+    TRISC = 0x00;
+
+    ANSEL = 0x00;
+    ANSELH = 0x00;
+
+    // UART Baud rate
+    SPBRG = 25;
+
+    // Enable UART transmitter
+    TXSTA = 0x26;
+
+    // Enable Serial Port and Continuous Receive
+    RCSTA = 0x90;
+
+    while(1)
+    {
+        transmit('D');
+    }
+}
